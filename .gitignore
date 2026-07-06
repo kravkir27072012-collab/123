@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Media / model artifacts
+output_clips/
+clips/
+*.mp4
+*.mov
+*.avi
+*.pth
+*.onnx
+*.pt
+
+.DS_Store
+.idea/
+.vscode/

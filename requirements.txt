@@ -1,0 +1,33 @@
+# ---- Core video / audio ----
+moviepy>=1.0.3
+librosa>=0.10.1
+soundfile>=0.12.1
+numpy>=1.24
+scipy>=1.10
+
+# ---- Computer vision ----
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# ---- Deep learning (motion is optional-free, these power SAM / emotion / inpainting) ----
+torch>=2.0.0
+torchvision>=0.15.0
+
+# ---- Segmentation (Background removal / replacement) ----
+# Segment Anything Model. Install the checkpoint separately (see README).
+segment-anything>=1.0
+# Lightweight fallback for background removal when SAM weights are unavailable.
+rembg>=2.0.50
+
+# ---- Face emotion detection (funny moment detection) ----
+# Either of these works; the code auto-detects whichever is installed.
+fer>=22.5.1
+# deepface>=0.0.79   # heavier alternative, uncomment if preferred
+
+# ---- Object removal / inpainting ----
+# cv2.inpaint is always available via opencv-python.
+# simple-lama-inpainting gives higher quality LaMa-based inpainting (optional).
+# simple-lama-inpainting>=0.1.2
+
+# ---- Utilities ----
+tqdm>=4.65.0
