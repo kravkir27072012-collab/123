@@ -1,0 +1,10 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+web_workspace
+output_clips
+clips
+*.mp4
+*.png

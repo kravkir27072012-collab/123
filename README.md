@@ -74,9 +74,26 @@ pip install -r requirements.txt
 видео в браузере, выбрать опции и получить готовые клипы с плеерами и кнопками
 скачивания.
 
+**Вариант 1 — Docker (проще всего, ffmpeg уже внутри):**
+
 ```bash
-pip install -r requirements.txt
-python webapp.py            # -> http://127.0.0.1:5000
+docker build -t video-clipper .
+docker run --rm -p 5000:5000 video-clipper
+# откройте http://localhost:5000
+```
+
+**Вариант 2 — скрипт (создаёт venv и ставит зависимости):**
+
+```bash
+./run_web.sh
+# откройте http://localhost:5000
+```
+
+**Вариант 3 — вручную:**
+
+```bash
+pip install -r requirements.txt   # нужен также системный ffmpeg
+python webapp.py                  # -> http://127.0.0.1:5000
 ```
 
 Возможности страницы:
