@@ -5,7 +5,11 @@ __pycache__/
 venv/
 env/
 
-# Media / model artifacts
+# Web app runtime workspace
+web_workspace/
+
+# Screenshots / media / model artifacts
+*.png
 output_clips/
 clips/
 *.mp4

@@ -29,5 +29,8 @@ fer>=22.5.1
 # simple-lama-inpainting gives higher quality LaMa-based inpainting (optional).
 # simple-lama-inpainting>=0.1.2
 
+# ---- Web interface ----
+flask>=3.0.0
+
 # ---- Utilities ----
 tqdm>=4.65.0
