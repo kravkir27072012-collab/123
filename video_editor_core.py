@@ -43,6 +43,26 @@ from effect_engine import EffectPipeline, replace_background, inpaint_object
 logger = logging.getLogger(__name__)
 
 
+def _import_video_file_clip():
+    """Import ``VideoFileClip`` across MoviePy 1.x and 2.x.
+
+    MoviePy 2.0 dropped the ``moviepy.editor`` namespace in favour of
+    top-level imports, so try the new location first and fall back.
+    """
+    try:
+        from moviepy import VideoFileClip  # MoviePy >= 2.0
+    except ImportError:  # pragma: no cover - depends on installed version
+        from moviepy.editor import VideoFileClip  # MoviePy 1.x
+    return VideoFileClip
+
+
+def _subclip(clip, start, end):
+    """Cut a subclip regardless of MoviePy version (``subclipped`` vs ``subclip``)."""
+    if hasattr(clip, "subclipped"):  # MoviePy >= 2.0
+        return clip.subclipped(start, end)
+    return clip.subclip(start, end)
+
+
 # ---------------------------------------------------------------------------
 # Highlight model
 # ---------------------------------------------------------------------------
@@ -241,7 +261,7 @@ class VideoEditorCore:
         An optional :class:`EffectPipeline` is applied to every clip.
         """
         try:
-            from moviepy.editor import VideoFileClip
+            VideoFileClip = _import_video_file_clip()
         except ImportError as exc:  # pragma: no cover
             raise ImportError("moviepy is required for rendering.") from exc
 
@@ -256,7 +276,7 @@ class VideoEditorCore:
                 if end - start < 0.5:
                     continue
 
-                subclip = source.subclip(start, end)
+                subclip = _subclip(source, start, end)
                 if effects is not None:
                     subclip = effects.apply_to_clip(subclip)
 
@@ -287,7 +307,7 @@ class VideoEditorCore:
         funny_only: bool = False,
     ) -> List[str]:
         """Run the entire pipeline end-to-end and return the clip paths."""
-        from moviepy.editor import VideoFileClip
+        VideoFileClip = _import_video_file_clip()
 
         audio_events, motion_events, emotion_events = self.analyze(video_path)
         highlights = self.find_highlights(

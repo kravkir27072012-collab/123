@@ -291,8 +291,10 @@ class EffectPipeline:
             out = self.process_frame(bgr, t)
             return cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
 
-        # fl() signature differs across MoviePy versions; both accept a
-        # (get_frame, t) callable.
+        # The frame-transform hook was renamed in MoviePy 2.0 (``fl`` ->
+        # ``transform``); both take the same ``(get_frame, t)`` callable.
+        if hasattr(clip, "transform"):  # MoviePy >= 2.0
+            return clip.transform(_transform)
         return clip.fl(_transform)
 
 

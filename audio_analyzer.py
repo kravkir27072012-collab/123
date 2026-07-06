@@ -120,11 +120,41 @@ class AudioAnalyzer:
     def load_audio(self, path: str) -> np.ndarray:
         """Load an audio *or* video file into a mono waveform.
 
-        ``librosa`` (via audioread/ffmpeg) can pull the audio track straight
-        out of an ``.mp4`` so callers can pass the video path directly.
+        ``librosa`` can pull the audio track straight out of an ``.mp4`` when a
+        system ``ffmpeg`` is on the PATH. When it isn't (e.g. only the bundled
+        ``imageio-ffmpeg`` binary is present), we fall back to extracting the
+        audio with MoviePy — which knows where its own ffmpeg lives — and read
+        the resulting WAV.
         """
         logger.info("Loading audio from %s", path)
-        y, _ = librosa.load(path, sr=self.sr, mono=True)
+        try:
+            y, _ = librosa.load(path, sr=self.sr, mono=True)
+            return y
+        except Exception as exc:  # noqa: BLE001 - broad on purpose (backend errors vary)
+            logger.warning("Direct audio load failed (%s); extracting via MoviePy.", exc)
+            return self._load_audio_via_moviepy(path)
+
+    def _load_audio_via_moviepy(self, path: str) -> np.ndarray:
+        import tempfile
+
+        try:
+            try:
+                from moviepy import VideoFileClip  # MoviePy >= 2.0
+            except ImportError:
+                from moviepy.editor import VideoFileClip  # MoviePy 1.x
+        except ImportError as exc:  # pragma: no cover
+            raise RuntimeError(
+                "Could not load audio: no ffmpeg backend for librosa and MoviePy "
+                "is not installed."
+            ) from exc
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as tmp:
+            with VideoFileClip(path) as clip:
+                if clip.audio is None:
+                    logger.warning("Video has no audio track.")
+                    return np.zeros(0, dtype=np.float32)
+                clip.audio.write_audiofile(tmp.name, fps=self.sr, logger=None)
+            y, _ = librosa.load(tmp.name, sr=self.sr, mono=True)
         return y
 
     # -- public API -------------------------------------------------------
