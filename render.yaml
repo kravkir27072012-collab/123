@@ -1,0 +1,21 @@
+# Render.com Blueprint — разворачивает веб-сайт как публичный сервис.
+#
+# Как получить рабочую ссылку:
+#   1. Зайди на https://render.com и войди через GitHub.
+#   2. New +  ->  Blueprint  ->  выбери этот репозиторий и ветку
+#      claude/smart-video-clipping-effects-seuj2o
+#   3. Render прочитает этот файл, соберёт Docker-образ и выдаст публичный
+#      адрес вида https://smart-video-clipper.onrender.com
+#
+# Примечание: на бесплатном тарифе мало памяти/CPU — тяжёлые модели (SAM,
+# DeepFace) лучше не включать; базовая нарезка по звуку и движению работает.
+services:
+  - type: web
+    name: smart-video-clipper
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "5000"
+    healthCheckPath: /
